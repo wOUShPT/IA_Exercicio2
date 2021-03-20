@@ -6,8 +6,10 @@ tree "root"
 
 tree "ChasePlayer" 
     sequence
-            while 
-                playerDetected
+            while
+                fallback 
+                    globalDetection
+                    playerDetected
                 Chase
             while
                 alerted

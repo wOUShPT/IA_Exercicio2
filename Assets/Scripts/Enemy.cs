@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Panda;
 using UnityEditor.UI;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 public class Enemy : MonoBehaviour
@@ -15,11 +16,16 @@ public class Enemy : MonoBehaviour
     private bool playerDetected;
     [Task]
     private bool alerted;
+    [Task]
+    private bool globalDetection;
+    public UnityEvent AlertOthers;
     private Vector3 startPosition;
-    private Vector3 lastPlayerPosition;
+    private bool _canAlertOthers;
+    public Vector3 lastPlayerPosition;
     void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        _canAlertOthers = false;
         startPosition = transform.position;
         playerDetected = false;
         alerted = false;
@@ -30,6 +36,7 @@ public class Enemy : MonoBehaviour
         Ray ray = new Ray(transform.position, (playerTransform.position-transform.position).normalized);
         if (Physics.Raycast(ray, out RaycastHit hit, 100) && hit.transform.CompareTag("Player"))
         {
+            globalDetection = false;
             playerDetected = true;
             alerted = true;
             lastPlayerPosition = playerTransform.position;
@@ -84,5 +91,20 @@ public class Enemy : MonoBehaviour
         {
             Task.current.Succeed();
         }
+    }
+    
+    public bool PlayerDetected => playerDetected;
+    
+
+    public bool GlobalDetection
+    {
+        get => globalDetection;
+        set => globalDetection = value;
+    }
+
+    public bool Alerted
+    {
+        get => alerted;
+        set => alerted = value;
     }
 }
